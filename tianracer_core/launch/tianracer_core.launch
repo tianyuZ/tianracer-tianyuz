@@ -14,9 +14,17 @@
     <param name="publish_tf" type="bool" value="false" />
   </node>
 
-  <!-- Robot_Localization for odometry ekf fusion-->
-  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
-      <rosparam command="load" file="$(find tianracer_core)/param/tianbot_ekf_params.yaml" />
-  </node>
+    <!-- Robot_Localization for odometry ekf fusion-->
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
+        <rosparam command="load" file="$(find tianracer_core)/param/tianbot_ekf_params.yaml" />
+        <param unless="$(eval robot_name=='/')" name="map_frame" value="$(arg robot_name)/$(arg map_frame)"/>
+        <param unless="$(eval robot_name=='/')" name="odom_frame" value="$(arg robot_name)/$(arg odom_frame)"/>
+        <param unless="$(eval robot_name=='/')" name="base_link_frame" value="$(arg robot_name)/$(arg base_link_frame)"/>
+        <param unless="$(eval robot_name=='/')" name="world_frame" value="$(arg robot_name)/$(arg world_frame)"/>
+        <!-- Guarantee consistency of the topics with tianracer with namespaces  -->
+        <param unless="$(eval robot_name=='/')" name="odom0" value="$(arg odom0)"/>
+        <param unless="$(eval robot_name=='/')" name="imu0" value="$(arg imu0)"/>
+    </node>
+  </group>
 
 </launch>
