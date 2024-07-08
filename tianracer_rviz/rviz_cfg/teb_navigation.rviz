@@ -57,7 +57,7 @@ Visualization Manager:
       Draw Behind: false
       Enabled: true
       Name: Map
-      Topic: /map
+      Topic: /tianracer/map
       Unreliable: false
       Use Timestamp: false
       Value: true
@@ -76,7 +76,7 @@ Visualization Manager:
           Shaft Length: 0.23000000417232513
           Shaft Radius: 0.009999999776482582
           Shape: Arrow (Flat)
-          Topic: /move_base/TebLocalPlannerROS/teb_poses
+          Topic: /tianracer/move_base/TebLocalPlannerROS/teb_poses
           Unreliable: false
           Value: true
         - Class: rviz/Marker
@@ -107,7 +107,7 @@ Visualization Manager:
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
-          Topic: /move_base/TebLocalPlannerROS/local_plan
+          Topic: /tianracer/move_base/TebLocalPlannerROS/local_plan
           Unreliable: false
           Value: true
         - Alpha: 0.4000000059604645
@@ -116,7 +116,7 @@ Visualization Manager:
           Draw Behind: false
           Enabled: true
           Name: LocalCostmap
-          Topic: /move_base/local_costmap/costmap
+          Topic: /tianracer/move_base/local_costmap/costmap
           Unreliable: false
           Use Timestamp: false
           Value: true
@@ -144,7 +144,7 @@ Visualization Manager:
           Radius: 0.029999999329447746
           Shaft Diameter: 0.10000000149011612
           Shaft Length: 0.10000000149011612
-          Topic: /move_base/TebLocalPlannerROS/global_plan
+          Topic: /tianracer/move_base/TebLocalPlannerROS/global_plan
           Unreliable: false
           Value: true
         - Alpha: 0.699999988079071
@@ -153,7 +153,7 @@ Visualization Manager:
           Draw Behind: false
           Enabled: true
           Name: GlobalCostmap
-          Topic: /move_base/global_costmap/costmap
+          Topic: /tianracer/move_base/global_costmap/costmap
           Unreliable: false
           Use Timestamp: false
           Value: true
@@ -166,7 +166,7 @@ Visualization Manager:
           Color: 85; 0; 255
           Enabled: true
           Name: Robot Footprint
-          Topic: /move_base/local_costmap/footprint
+          Topic: /tianracer/move_base/local_costmap/footprint
           Unreliable: false
           Value: true
         - Alpha: 1
@@ -194,7 +194,7 @@ Visualization Manager:
           Size (Pixels): 3
           Size (m): 0.05000000074505806
           Style: Flat Squares
-          Topic: /scan
+          Topic: /tianracer/scan
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
@@ -212,7 +212,7 @@ Visualization Manager:
           Shaft Length: 0.23000000417232513
           Shaft Radius: 0.009999999776482582
           Shape: Arrow (Flat)
-          Topic: /particlecloud
+          Topic: /tianracer/particlecloud
           Unreliable: false
           Value: false
         - Class: rviz/TF
@@ -260,7 +260,7 @@ Visualization Manager:
             Shaft Length: 1
             Shaft Radius: 0.05000000074505806
             Value: Arrow
-          Topic: /odom
+          Topic: /tianracer/odom
           Unreliable: false
           Value: false
       Enabled: true
@@ -281,14 +281,14 @@ Visualization Manager:
     - Class: rviz/Measure
     - Class: rviz/SetInitialPose
       Theta std deviation: 0.2617993950843811
-      Topic: /initialpose
+      Topic: /tianracer/initialpose
       X std deviation: 0.5
       Y std deviation: 0.5
     - Class: rviz/SetGoal
-      Topic: /move_base_simple/goal
+      Topic: /tianracer/move_base_simple/goal
     - Class: rviz/PublishPoint
       Single click: true
-      Topic: /clicked_point
+      Topic: /tianracer/clicked_point
   Value: true
   Views:
     Current:
