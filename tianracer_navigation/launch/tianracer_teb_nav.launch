@@ -17,7 +17,7 @@
     <arg name="init_a" default="0.0" />
     <arg name="base" default="$(optenv TIANRACER_BASE compact)" />
     <!-- for Map server -->
-    <arg name="map_file" default="$(optenv TIANRACER_MAP_FILE gmapping)" />
+    <arg name="map_file" default="$(optenv TIANRACER_MAP_FILE tianbot_office)" />
     <arg name="map_path" default="$(find tianracer_slam)/maps" />
     <!-- Define various frame and topic IDs with default values -->
     <arg name="odom_frame_id" default="odom"/>
