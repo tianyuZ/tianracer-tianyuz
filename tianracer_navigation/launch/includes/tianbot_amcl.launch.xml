@@ -6,7 +6,7 @@
     <arg name="init_a" default="0" />
     <arg name="robot_name" default="tianracer"/>
 
-    <node pkg="amcl" type="amcl" name="amcl" output="screen" ns="$(arg robot_name)">
+    <node pkg="amcl" type="amcl" name="amcl" output="screen" >
         <!-- Publish scans from best pose at a max of 10 Hz -->
         <param name="transform_tolerance" value="0.5" />
         <param name="gui_publish_rate" value="10.0"/>
@@ -41,9 +41,9 @@
         <param name="first_map_only" value="true"/>
         <param name="tf_broadcast" value="true"/>
 
-        <param name="odom_frame_id" value="$(arg robot_name)/odom"/>
+        <param name="odom_frame_id" value="odom"/>
         <param name="global_frame_id" value="map"/>
-        <param name="base_frame_id" value="$(arg robot_name)/base_footprint"/>
+        <param name="base_frame_id" value="base_footprint"/>
         <param name="odom_model_type" value="diff"/>
 
         <param name="initial_pose_x" value="$(arg init_x)"/>
