@@ -37,6 +37,7 @@ class RaceStateMachine(object):
         self._tolerance_length = 0
 
         # publish the first goal
+        rospy.sleep(0.2)     # wait for move_base to be ready, it is necessary and very important
         self._current_goal = utils.create_move_base_goal(self._waypoints[self._counter])
         self._ac_move_base.send_goal(self._current_goal)
         self._counter += 1
@@ -61,7 +62,7 @@ class RaceStateMachine(object):
 
         length = math.sqrt(math.pow((trans.transform.translation.x - current_goal.x), 2) + math.pow((trans.transform.translation.y - current_goal.y), 2))
         
-        self._tolerance_length = 3    # 控制当前规划的路径中还剩多少个途经点时，发送下一个目标点
+        self._tolerance_length = 3    # 控制当前位置距离目标点多远时，发送下一个目标点
         if length < self._tolerance_length:
             self._early_pub = True
         else:
