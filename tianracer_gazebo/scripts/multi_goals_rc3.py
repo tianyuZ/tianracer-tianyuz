@@ -57,6 +57,7 @@ class RaceStateMachine(object):
         length = len(data.poses)
        
         if not self._len_path_list:
+            rospy.sleep(0.2)   # wait for the new global planner path to be ready
             self._len_path_list.append(length)
             print("len_path_list: ", self._len_path_list)
             self._tolerance_length = max(self._len_path_list) / 2.5    # 控制当前规划的路径中还剩多少个途经点时，发送下一个目标点
