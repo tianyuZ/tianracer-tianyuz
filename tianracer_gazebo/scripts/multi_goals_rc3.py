@@ -14,6 +14,7 @@ import waypoint_race.utils as utils
 import nav_msgs.msg as nav_msgs
 import move_base_msgs.msg as move_base_msgs
 import visualization_msgs.msg as viz_msgs
+import subprocess
 
 world = os.getenv("TIANRACER_WORLD", "tianracer_racetrack")
 
@@ -35,12 +36,17 @@ class RaceStateMachine(object):
         self._early_pub = False
         self._len_path_list = []
         self._tolerance_length = 0
+        self._min_tolerance_length = 300
 
         # pub first goal
-        rospy.sleep(0.2)     # wait for move_base to be ready, it is necessary and very important
+        rospy.sleep(3)     # wait for move_base to be ready, it is necessary and very important
         self._current_goal = utils.create_move_base_goal(self._waypoints[self._counter])
         self._ac_move_base.send_goal(self._current_goal)
         self._counter += 1
+        rospy.loginfo("the status of move_base: %s", self._ac_move_base.get_state())
+
+        # clear_costmap
+        self._clear_costmap_command  = (f"rosservice call /tianracer/move_base/clear_costmaps")
         
         # 以下为了显示目标点
         self._pub_viz_marker = rospy.Publisher('viz_waypoints', viz_msgs.MarkerArray, queue_size=1, latch=True)
@@ -54,13 +60,19 @@ class RaceStateMachine(object):
         """
         count how many waypoints left
         """
+
+        rospy.loginfo("the status of move_base: %s", self._ac_move_base.get_state())
         length = len(data.poses)
        
         if not self._len_path_list:
             rospy.sleep(0.2)   # wait for the new global planner path to be ready
             self._len_path_list.append(length)
-            print("len_path_list: ", self._len_path_list)
+            rospy.loginfo("len_path_list: %s", self._len_path_list)
             self._tolerance_length = max(self._len_path_list) / 2.5    # 控制当前规划的路径中还剩多少个途经点时，发送下一个目标点
+            
+            # limit of value
+            if self._tolerance_length < self._min_tolerance_length:
+                self._tolerance_length = self._min_tolerance_length      # avoid the value is too small
             rospy.loginfo("the tolerance: %d", self._tolerance_length)
         else:
             pass
@@ -101,6 +113,7 @@ class RaceStateMachine(object):
         while not rospy.is_shutdown() and self._repeat:
             if self._early_pub:
                 self._len_path_list = []
+                subprocess.Popen(self._clear_costmap_command, shell=True)
                 self.move_to_next()
                 self._early_pub = False
             else:
