@@ -1,22 +1,23 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # LastEditors: sujit-168 su2054552689@gmail.com
 # LastEditTime: 2024-03-22 10:23:42
 
 """
-订阅 /tf 来计算当前位姿与目标点的 L2 范数，通过距离容忍值来控制提前发布
-问题 1：直接订阅 odom 话题的发布频率不够
+the brief: subscribe to tf to calculate the l2 norm of the current pose and the target point and control early publish with the distance tolerance value
+problem 1: direct subscriptions to odom topics are not posted frequently enough
 """
 
 import os, math
 import rospy, rospkg
 import tf2_ros
-import actionlib # 引用 actionlib 库
+import actionlib
 import waypoint_race.utils as utils
 import tf2_msgs.msg as tf2_msgs
 import move_base_msgs.msg as move_base_msgs
 import visualization_msgs.msg as viz_msgs
 
 world = os.getenv("TIANRACER_WORLD", "tianracer_racetrack")
+robot_name = os.getenv("TIANRACER_NAME", "tianracer")
 
 class RaceStateMachine(object):
     def __init__(self, filename, repeat=True):
@@ -25,10 +26,10 @@ class RaceStateMachine(object):
         filename: path to your yaml file
         reapeat: determine whether to visit waypoints repeatly(usually True in 110)
         """
-        self._waypoints = utils.get_waypoints(filename) # 获取一系列目标点的值
+        self._waypoints = utils.get_waypoints(filename) # gets the value of a series of target points
 
         action_name = 'move_base'
-        self._ac_move_base = actionlib.SimpleActionClient(action_name, move_base_msgs.MoveBaseAction) # 创建一个 SimpleActionClient
+        self._ac_move_base = actionlib.SimpleActionClient(action_name, move_base_msgs.MoveBaseAction) # simple action client
         rospy.loginfo('Wait for %s server' % action_name)
         self._ac_move_base.wait_for_server
         self._counter = 0
@@ -46,7 +47,7 @@ class RaceStateMachine(object):
         self._buffer = tf2_ros.Buffer()
         tf2_ros.TransformListener(self._buffer)
 
-        # 以下为了显示目标点：
+        # the following is to display the target point
         self._pub_viz_marker = rospy.Publisher('viz_waypoints', viz_msgs.MarkerArray, queue_size=1, latch=True)
         self._viz_markers = utils.create_viz_markers(self._waypoints)
 
@@ -54,15 +55,15 @@ class RaceStateMachine(object):
         """
         count how many length of left
         """
-        rospy.sleep(0.1)   # 等待 0.1 秒，确保 tf buffer 已经更新
+        rospy.sleep(0.1)   # wait for 0.1s, ensure tf buffer is updated
 
-        trans = self._buffer.lookup_transform("tianracer/base_footprint", "tianracer/odom", rospy.Time(0))
+        trans = self._buffer.lookup_transform(robot_name+ "/base_footprint", robot_name + "/odom", rospy.Time(0))
         current_goal = self._current_goal.target_pose.pose.position
         rospy.loginfo("current goal x: %s, y: %s", current_goal.x, current_goal.y)
 
         length = math.sqrt(math.pow((trans.transform.translation.x - current_goal.x), 2) + math.pow((trans.transform.translation.y - current_goal.y), 2))
         
-        self._tolerance_length = 3    # 控制当前位置距离目标点多远时，发送下一个目标点
+        self._tolerance_length = 3    # when controlling how far the current position is from the target point the next target point is sent
         if length < self._tolerance_length:
             self._early_pub = True
         else:
@@ -74,11 +75,12 @@ class RaceStateMachine(object):
         if not pos:
             rospy.loginfo("Finishing Race")
             return True
-        # 把文件读取的目标点信息转换成 move_base 的 goal 的格式：
+        # convert the target point information read from the file into the format of the goal of move base
         goal = utils.create_move_base_goal(pos)
         self._current_goal = utils.create_move_base_goal(pos)
         rospy.loginfo("Move to %s" % pos['name'])
-        # 这里也是一句很简单的 send_goal:
+
+        # here s a very simple send goal
         self._ac_move_base.send_goal(goal)
 
     def _get_next_destination(self):
@@ -102,7 +104,7 @@ class RaceStateMachine(object):
                 self.move_to_next()
                 self._early_pub = False
             else:
-                rospy.sleep(1.0)   # 控制发送目标点后车能继续行驶时间的长度
+                rospy.sleep(1.0)   # controls the length of time the vehicle can continue to drive after sending the target point
 
 if __name__ == '__main__':
     rospy.init_node('race')

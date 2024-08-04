@@ -1,15 +1,15 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # LastEditors: sujit-168 su2054552689@gmail.com
 # LastEditTime: 2024-03-22 10:23:42
 
 """
-使用 move_base/NavfnROS/plan 订阅全局 NavfnROS 的路径点个数的长度比例，来控制提前发布
-问题 1：move_base/NavfnROS/plan 话题的发布频率不够
+the brief: use move base navfn ros plan to control early publishing by subscribing to the length rate of the number of waypoints for /global_plan
+problem 1: the move base navfn ros plan topic is not posted frequently enough
 """
 
 import os
 import rospy, rospkg
-import actionlib # 引用 actionlib 库
+import actionlib 
 import waypoint_race.utils as utils
 import nav_msgs.msg as nav_msgs
 import move_base_msgs.msg as move_base_msgs
@@ -25,10 +25,10 @@ class RaceStateMachine(object):
         filename: path to your yaml file
         reapeat: determine whether to visit waypoints repeatly(usually True in 110)
         """
-        self._waypoints = utils.get_waypoints(filename) # 获取一系列目标点的值
+        self._waypoints = utils.get_waypoints(filename) # gets the value of a series of target points
 
         action_name = 'move_base'
-        self._ac_move_base = actionlib.SimpleActionClient(action_name, move_base_msgs.MoveBaseAction) # 创建一个 SimpleActionClient
+        self._ac_move_base = actionlib.SimpleActionClient(action_name, move_base_msgs.MoveBaseAction) # create one SimpleActionClient
         rospy.loginfo('Wait for %s server' % action_name)
         self._ac_move_base.wait_for_server
         self._counter = 0
@@ -48,13 +48,13 @@ class RaceStateMachine(object):
         # clear_costmap
         self._clear_costmap_command  = (f"rosservice call /tianracer/move_base/clear_costmaps")
         
-        # 以下为了显示目标点
+        # the following is to display the target point
         self._pub_viz_marker = rospy.Publisher('viz_waypoints', viz_msgs.MarkerArray, queue_size=1, latch=True)
         self._viz_markers = utils.create_viz_markers(self._waypoints)
         
-        # 开始订阅全局路径
-        # self._rest_of_path = rospy.Subscriber("move_base/NavfnROS/plan", nav_msgs.Path, self._rest_of_path_callback, queue_size=1)                   # bug: 发布频率不够，仅有 2hz 左右，可以调整 move_base 参数改善
-        self._rest_of_path = rospy.Subscriber("move_base/TebLocalPlannerROS/global_plan", nav_msgs.Path, self._rest_of_path_callback, queue_size=1)    # 发布频率在 10hz 左右
+        # start subscribing to the global path
+        # self._rest_of_path = rospy.Subscriber("move_base/NavfnROS/plan", nav_msgs.Path, self._rest_of_path_callback, queue_size=1)                   # bug: the release frequency is not enough only about 2hz and the move base parameters can be adjusted to improve
+        self._rest_of_path = rospy.Subscriber("move_base/TebLocalPlannerROS/global_plan", nav_msgs.Path, self._rest_of_path_callback, queue_size=1)    # the release frequency is around 10hz
 
     def _rest_of_path_callback(self, data):
         """
@@ -68,7 +68,7 @@ class RaceStateMachine(object):
             rospy.sleep(0.2)   # wait for the new global planner path to be ready
             self._len_path_list.append(length)
             rospy.loginfo("len_path_list: %s", self._len_path_list)
-            self._tolerance_length = max(self._len_path_list) / 2.5    # 控制当前规划的路径中还剩多少个途经点时，发送下一个目标点
+            self._tolerance_length = max(self._len_path_list) / 2.5    # controls how many transit points are left in the currently planned route and sends the next destination point
             
             # limit of value
             if self._tolerance_length < self._min_tolerance_length:
@@ -88,10 +88,11 @@ class RaceStateMachine(object):
         if not pos:
             rospy.loginfo("Finishing Race")
             return True
-        # 把文件读取的目标点信息转换成 move_base 的 goal 的格式：
+        # convert the target point information read from the file into the format of the goal of move base
         goal = utils.create_move_base_goal(pos)
         rospy.loginfo("Move to %s" % pos['name'])
-        # 这里也是一句很简单的 send_goal:
+
+        # here s a very simple send goal
         self._ac_move_base.send_goal(goal)
 
     def _get_next_destination(self):
@@ -117,7 +118,7 @@ class RaceStateMachine(object):
                 self.move_to_next()
                 self._early_pub = False
             else:
-                rospy.sleep(1.0)   # 控制发送目标点后车能继续行驶时间的长度
+                rospy.sleep(1.0)   # controls the length of time the vehicle can continue to drive after sending the target point
 
 if __name__ == '__main__':
     rospy.init_node('race')

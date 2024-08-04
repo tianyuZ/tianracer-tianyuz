@@ -1,13 +1,18 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # @Source: https://www.guyuehome.com/35146
 # @Time: 2023/10/20 17:02:46
 # @Author: Jeff Wang(Lr_2002)
 # LastEditors: sujit-168 su2054552689@gmail.com
 # LastEditTime: 2024-03-22 10:23:42
 
+"""
+the brief:     the timeout is controlled by the time out parameter of the wait_for_result of SimpleActionClient
+tuning method: adjust the timeout period of the wait_for_result to ensure that the path length between the target points is similar
+"""
+
 import os
 import rospy, rospkg
-import actionlib # 引用 actionlib 库
+import actionlib
 import waypoint_race.utils as utils
 
 import move_base_msgs.msg as move_base_msgs
@@ -22,17 +27,17 @@ class RaceStateMachine(object):
         filename: path to your yaml file
         reapeat: determine whether to visit waypoints repeatly(usually True in 110)
         """
-        self._waypoints = utils.get_waypoints(filename) # 获取一系列目标点的值
+        self._waypoints = utils.get_waypoints(filename) # gets the value of a series of target points
 
         action_name = 'move_base'
-        self._ac_move_base = actionlib.SimpleActionClient(action_name, move_base_msgs.MoveBaseAction) # 创建一个 SimpleActionClient
+        self._ac_move_base = actionlib.SimpleActionClient(action_name, move_base_msgs.MoveBaseAction) # simple customer action
         rospy.loginfo('Wait for %s server' % action_name)
         self._ac_move_base.wait_for_server
         self._counter = 0
         self._repeat = repeat
 
 
-        # 以下为了显示目标点：
+        # the following is to display the target point
         self._pub_viz_marker = rospy.Publisher('viz_waypoints', viz_msgs.MarkerArray, queue_size=1, latch=True)
         self._viz_markers = utils.create_viz_markers(self._waypoints)
 
@@ -42,12 +47,13 @@ class RaceStateMachine(object):
         if not pos:
             rospy.loginfo("Finishing Race")
             return True
-        # 把文件读取的目标点信息转换成 move_base 的 goal 的格式：
+        # convert the target point information read from the file into the format of the goal of move base
         goal = utils.create_move_base_goal(pos)
         rospy.loginfo("Move to %s" % pos['name'])
-        # 这里也是一句很简单的 send_goal:
+
+        # send the goal to the move base
         self._ac_move_base.send_goal(goal)
-        self._ac_move_base.wait_for_result(rospy.Duration(8.5))
+        self._ac_move_base.wait_for_result(rospy.Duration(8.5))        # wait for the result of the action server， control the timeout time
         result = self._ac_move_base.get_result()
         rospy.loginfo("Result : %s" % result)
 
