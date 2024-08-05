@@ -16,6 +16,7 @@
     <!-- Set the Y position of the robot, controlled by a static transform -->
     <arg name="world" value="$(arg world)" />
     <arg name="y_pos" value="-1.5"/>
+    <arg name="z_pos" value="1.0"/>
   </include>
 
   <!-- Launch RViz for visualization and debugging -->

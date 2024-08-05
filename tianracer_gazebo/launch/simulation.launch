@@ -25,7 +25,7 @@
 
     <arg name="x_pos" default="0" />
     <arg name="y_pos" default="0" />
-    <arg name="z_pos" default="0" />
+    <arg name="z_pos" default="1.0" />
     <arg name="R_pos" default="0" />
     <arg name="P_pos" default="0" />
     <arg name="Y_pos" default="1.5708" />
