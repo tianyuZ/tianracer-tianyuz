@@ -35,16 +35,17 @@ def display_direction(scale, tail, tip, idnum):
     m.ns = "points_arrow"
     m.id = idnum
     m.type = Marker.ARROW
-    m.pose.orientation.y = 0 
-    m.pose.orientation.w = 0
+    m.pose.orientation.x = 0.0
+    m.pose.orientation.y = 0.0
+    m.pose.orientation.z = 0.0
+    m.pose.orientation.w = 1.0
     m.scale = scale
-    m.color.r = 1
-    m.color.g = 0.2
+    m.color.r = 1.0
+    m.color.g = 0.1
     m.color.b = 0.1
-    m.color.a = 0.2
+    m.color.a = 0.6
     m.points = [tail, tip]
     return m
-
 
 def display_threshold(scale, points, idnum):
     """
@@ -60,10 +61,10 @@ def display_threshold(scale, points, idnum):
     m.ns = "round"
     m.id = idnum
     m.type = Marker.CYLINDER
-    m.pose.orientation.y = 0.0
     m.pose.orientation.x = 0.0
-    m.pose.orientation.z = 0
-    m.pose.orientation.w = 0.707
+    m.pose.orientation.y = 0.0
+    m.pose.orientation.z = 0.0
+    m.pose.orientation.w = 1.0
     m.pose.position.x = points[0]
     m.pose.position.y = points[1]
     m.pose.position.z = points[2]
@@ -71,7 +72,7 @@ def display_threshold(scale, points, idnum):
     m.color.r = 0
     m.color.g = 0.
     m.color.b = 1
-    m.color.a = 0.1
+    m.color.a = 0.3
     return m
 
 FILTER_VALUE = 10.0
@@ -147,7 +148,6 @@ def follow_the_gap_callback(data):
     start_idx = end_idx - max(gap_list) + 1 # get the start point idx
     target_angle = (end_idx + start_idx) /2 *STEP + start_point # get the mid point 
 
-
     avoidance_angle = 6  # avoidance angle of the gap(usually according to the size of the model)
     if target_angle > 0:
         target_angle -= avoidance_angle
@@ -163,7 +163,6 @@ def follow_the_gap_callback(data):
     steering_angle = steering_angle if steering_angle > -clip_threhold else -clip_threhold
     global g_ang 
     
-    
     dis_ml = Float64MultiArray(data=dis_list)
     frame_pub.publish(dis_ml)
     speed = 1.7
@@ -177,10 +176,6 @@ def follow_the_gap_callback(data):
     drive_msg.drive.steering_angle=steering_angle
     drive_msg.drive.speed=speed
     drive_pub.publish(drive_msg)
-
-
-
-
 
 if __name__ == '__main__': 
   try:
