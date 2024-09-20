@@ -5,7 +5,7 @@
   <arg name="world" default="$(optenv TIANRACER_WORLD racetrack_1)" doc="world name [racetrack_1, racetrack_2, racetrack_3, ...]"/>
 
   <!-- Include the simulation launch file for the first robot -->
-  <include file="$(find tianracer_gazebo)/launch/simulation.launch" >
+  <include file="$(find tianracer_gazebo)/launch/swarm/simulation.launch" >
     <arg name="robot_name" value="$(arg robot_name_1)" />
     <arg name="world" value="$(arg world)" />
     <arg name="x_pos" value="0.5" />
@@ -14,7 +14,7 @@
   </include>
 
   <!-- Include the launch file for spawning the second robot in Gazebo -->
-  <include file="$(find tianracer_gazebo)/launch/spawn_tianracer.launch">
+  <include file="$(find tianracer_gazebo)/launch/swarm/spawn_tianracer.launch">
     <arg name="robot_name" value="$(arg robot_name_2)" />
     <!-- Set the Y position of the robot, controlled by a static transform -->
     <arg name="world" value="$(arg world)" />
