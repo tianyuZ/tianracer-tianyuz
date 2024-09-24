@@ -24,7 +24,17 @@
       <!-- servo node -->
       <node pkg="tianracer_gazebo" type="transform.py" name="nav_sim" output="screen"/>
       <!-- Allow for Gazebo to broadcast odom -->
-      <node pkg="tianracer_gazebo" name="gazebo_odometry_node" type="gazebo_odometry.py" output="screen"/> 
+      <!-- <node pkg="tianracer_gazebo" name="gazebo_odometry_node" type="gazebo_odometry.py" output="screen"/>  -->
+
+      <!--Use lidar odometry-->
+      <node pkg="tf" type="static_transform_publisher" name="base_footprint_shadow_to_base_footprint" args="0 0 0 0 0 0 $(arg robot_name)/base_footprint_shadow $(arg robot_name)/base_footprint 10"/>
+      <node pkg="tianracer_gazebo" type="init_pose_pub.py" name="init_pose_pub" output="screen">
+        <param name="init_position" value="[0.0, 0.0, 0.0]" type="yaml"/>
+        <param name="init_orientation" value="[0.0, 0.0, 0.707, 0.707]" type="yaml"/>
+      </node>
+      <include file="$(find tianracer_gazebo)/launch/includes/rf2o_laser_odometry.launch.xml">
+        <arg name="robot_name" default="tianracer"/>
+      </include>
   </group>
   
 

@@ -1,0 +1,5 @@
+[submodule "rf2o_laser_odometry"]
+	path = modules/rf2o_laser_odometry
+	url = https://github.com/tianyuZ/rf2o_laser_odometry.git
+	branch = ros1-tianyuZ
+
